@@ -68,13 +68,12 @@ def remove_sl(array: np.ndarray, timestamp_label, t):
     """
     new_array = np.array([])
     for line in timestamp_label:
-        if line[2] != 'sil':
-            try:
-                idx1 = int(get_closest_idx(t, line[0]))
-                idx2 = int(get_closest_idx(t, line[1]))
-                new_array = np.append(new_array, array[idx1:idx2])
-            except:
-                print(line)
+        try:
+            idx1 = int(get_closest_idx(t, line[0]))
+            idx2 = int(get_closest_idx(t, line[1]))
+            new_array = np.append(new_array, array[idx1:idx2])
+        except:
+            print(line)
     return new_array
 
 
