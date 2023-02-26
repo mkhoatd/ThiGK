@@ -2,7 +2,6 @@
 # import plotly.graph_objects as go
 # from plotly.subplots import make_subplots
 import os
-
 import librosa
 import numpy as np
 
@@ -176,7 +175,6 @@ signal_list[i], sr_list[i], t_list[i], timestamp_label_list[i]
 # %%
 t_list[0][-1]
 
-
 # %%
 audio_name_list
 import matplotlib.pyplot as plt
@@ -184,7 +182,117 @@ import matplotlib.pyplot as plt
 # %%
 plt.plot(t_list[0], signal_list[0])
 # %%
-ste, frame_edges = calc_STE(signal_list[0], sr_list[0], 0.02)
-plt.plot(ste)
 
+# plt.axvline(x = )
+
+# %%
+# def cost(threshold):
+class SpeechSlienceDiscriminator:
+    def __init__(self, audio_name, signal, sr, t, timestamp_label):
+        self.audio_name = audio_name
+        self.signal = signal
+        self.sr = sr
+        self.t = t
+        self. timestamp_label = timestamp_label
+        
+    def calc_STE(self, frame_length=0.02):
+        STE = []
+        frame_size = int(self.sr * frame_length)
+        frames_count = len(self.signal) // frame_size
+        frame_edges = []
+        for i in range(frames_count):
+            startIdx = i*frame_size
+            stop_Idx = startIdx + frame_size
+            window = np.zeros(self.signal.shape)
+            window[startIdx:stop_Idx] = 1
+            value = np.sum(np.square(self.signal) * window)
+            STE.append(value)
+            frame_edges.append(startIdx)
+        STE = np.array(STE)
+        STE = STE.reshape(-1)
+        frame_edges = np.array(frame_edges)
+        frame_edges = frame_edges.reshape(-1)
+        self.STE = STE
+        self.frame_edges = frame_edges
+        return STE, frame_edges
+    
+    def calc_silent_frame_idx(self):
+        silent_timestamps = list(filter(lambda x: x[2] == "sil", self.timestamp_label))
+        silent_timestamps = list(map(lambda x: x[:2], silent_timestamps))
+        silent_idx = []
+        for timestamp_pair in silent_timestamps:
+            start = float(timestamp_pair[0])
+            end = float(timestamp_pair[1])
+            start_idx = len(self.t[self.t<start])
+            end_idx = len(self.t[self.t<end])
+            silent_idx.append((start_idx, end_idx))
+        silent_frame_idx = []
+        for idx_pair in silent_idx:
+            frame_size = self.frame_edges[1] - self.frame_edges[0]
+            start_idx = int(idx_pair[0]/frame_size)
+            end_idx = int(idx_pair[1]/frame_size)
+            silent_frame_idx.append((start_idx, end_idx))
+        self.silent_frame_idx = silent_frame_idx
+    
+    def cost(self, threshold):
+        self.calc_silent_frame_idx()
+        plt.plot(self.STE)
+        for idx_pair in self.silent_frame_idx:
+            plt.axvline(x = idx_pair[0], color = "red")
+            plt.axvline(x = idx_pair[1], color = "red") 
+        plt.show()
+        ste_bellow_threshold = self.STE<threshold
+        ste_speech_silence = np.full(self.STE.shape, False)
+        for idx_pair in self.silent_frame_idx:
+            ste_speech_silence[idx_pair[0]:idx_pair[1]+1] = True
+            
+        
+        return None
+        
+        # retun ste_bellow_threshold
+        # flipped = ste_bellow_threshold == False
+        # plt.plot(ste_bellow_threshold)
+        # plt.show()
+        # transition_idx = ~flipped & np.roll(flipped, -1)
+        # transition_idx[0] = True
+        # transition_idx[-1] = True
+         
+        # print(transition_idx)
+        
+        # return transition_idx
+        
+    def run(self):
+        threshold_init = (np.max(self.STE) - np.min(self.STE))//2
+        self.cost(threshold_init)
+        
+        
+        
+
+def calc_STE(signal, sr, frame_length=0.02):
+    """Calculate STE
+    signal_frames: Array of frames
+    Return: Array of STE for each frame
+    """
+    STE = []
+    frame_size = int(sr*frame_length)
+    frames_count = len(signal) // frame_size
+    frame_edges = []
+    for i in range(frames_count):
+        startIdx = i*frame_size
+        stop_Idx = startIdx + frame_size
+        window = np.zeros(signal.shape)
+        window[startIdx:stop_Idx] = 1
+        value = np.sum(np.square(signal) * window)
+        STE.append(value)
+        frame_edges.append(startIdx)
+    STE = np.array(STE)
+    STE = STE.reshape(-1)
+    frame_edges = np.array(frame_edges)
+    frame_edges = frame_edges.reshape(-1)
+    return STE, frame_edges
+# %%
+a = SpeechSlienceDiscriminator(audio_name_list[0], signal_list[0], sr_list[0], t_list[0], timestamp_label_list[0])
+
+a.calc_STE()
+a.run()
 # %%
