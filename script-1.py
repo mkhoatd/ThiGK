@@ -180,7 +180,6 @@ audio_name_list
 import matplotlib.pyplot as plt
 
 # %%
-plt.plot(t_list[0], signal_list[0])
 # %%
 
 # plt.axvline(x = )
@@ -194,6 +193,8 @@ class SpeechSlienceDiscriminator:
         self.sr = sr
         self.t = t
         self. timestamp_label = timestamp_label
+        self.calc_STE()
+        self.calc_silent_frame_idx()
         
     def calc_STE(self, frame_length=0.02):
         STE = []
@@ -212,6 +213,7 @@ class SpeechSlienceDiscriminator:
         STE = STE.reshape(-1)
         frame_edges = np.array(frame_edges)
         frame_edges = frame_edges.reshape(-1)
+        STE /= np.linalg.norm(STE) 
         self.STE = STE
         self.frame_edges = frame_edges
         return STE, frame_edges
@@ -230,24 +232,30 @@ class SpeechSlienceDiscriminator:
         for idx_pair in silent_idx:
             frame_size = self.frame_edges[1] - self.frame_edges[0]
             start_idx = int(idx_pair[0]/frame_size)
-            end_idx = int(idx_pair[1]/frame_size)
+            end_idx = int(idx_pair[1]/frame_size)-1
             silent_frame_idx.append((start_idx, end_idx))
         self.silent_frame_idx = silent_frame_idx
-    
-    def cost(self, threshold):
-        self.calc_silent_frame_idx()
-        plt.plot(self.STE)
+        STE_in_silence = np.full(self.STE.shape, 0)
+        for idx_pair in self.silent_frame_idx:
+            STE_in_silence[idx_pair[0]:idx_pair[1]+1] = 1
+        self.STE_in_silence = STE_in_silence
+        
+        
+        
+    def plot_ste(self):
+        plt.plot(self.STE, color = "yellow")
+        threshold = self.STE[self.silent_frame_idx[0][1]]
+        plt.axhline(y = threshold, color = "red")
         for idx_pair in self.silent_frame_idx:
             plt.axvline(x = idx_pair[0], color = "red")
             plt.axvline(x = idx_pair[1], color = "red") 
         plt.show()
-        ste_bellow_threshold = self.STE<threshold
-        ste_speech_silence = np.full(self.STE.shape, False)
-        for idx_pair in self.silent_frame_idx:
-            ste_speech_silence[idx_pair[0]:idx_pair[1]+1] = True
-            
         
-        return None
+    
+    
+    # def cost(self, threshold):
+    #     self.calc_silent_frame_idx()
+
         
         # retun ste_bellow_threshold
         # flipped = ste_bellow_threshold == False
@@ -261,9 +269,57 @@ class SpeechSlienceDiscriminator:
         
         # return transition_idx
         
+    
+    def cross_entropy(self, y_hat):
+        y = self.STE_in_silence
+        loss = -(y * np.log(y_hat) + (1-y) * np.log(1-y_hat))
+        return np.sum(loss)
+    
+    def derivative_cross_entropy(self, x):
+        t = self.STE_in_silence
+        dLoss = t - x
+        return dLoss
+    
+    def sigmoid(self, x):
+        return 1/(1+np.exp(-x))
+    
+    def derivative_sigmoid(self, x):
+        return self.sigmoid(x) * (1-self.sigmoid(x))
+        
+    def logistic_regression(self):
+        w = np.random.normal(size = (1, ))
+        b = 0
+        z = w * self.STE + b
+        y_hat = self.sigmoid(z)
+        loss = self.cross_entropy(y_hat)
+        while loss > 0.1:
+            y = self.STE_in_silence
+            dLoss_dw = (y_hat - y)*self.STE
+            dLoss_db = y_hat - y
+            w -= 0.1 * dLoss_dw.sum()/len(self.STE)
+            b -= 0.1 * dLoss_db.sum()/len(self.STE)
+            z = w * self.STE + b
+            y_hat = self.sigmoid(z)
+            loss = self.cross_entropy(y_hat)
+            print(loss)
+            
+        
+        return w, b
+        
+        
+        
+        
+        
+        
     def run(self):
-        threshold_init = (np.max(self.STE) - np.min(self.STE))//2
-        self.cost(threshold_init)
+        thresholds = np.linspace(np.min(self.STE), 0.01, 1000)
+        costs = []
+        for threshold in thresholds:
+            costs.append(self.cost(threshold))
+        costs= np.array(costs)
+        plt.plot(costs)
+        
+        
         
         
         
@@ -293,6 +349,7 @@ def calc_STE(signal, sr, frame_length=0.02):
 # %%
 a = SpeechSlienceDiscriminator(audio_name_list[0], signal_list[0], sr_list[0], t_list[0], timestamp_label_list[0])
 
-a.calc_STE()
-a.run()
+w, b = a.logistic_regression()
+print(w, b)
+
 # %%
