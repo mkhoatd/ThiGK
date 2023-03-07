@@ -1,0 +1,107 @@
+
+Name  : Language.OCR~~~ar-SA~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~bg-BG~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~bs-LATN-BA~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~cs-CZ~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~da-DK~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~de-DE~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~el-GR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~en-GB~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~en-US~0.0.1.0
+State : Installed
+
+Name  : Language.OCR~~~es-ES~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~es-MX~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~fi-FI~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~fr-CA~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~fr-FR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~hr-HR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~hu-HU~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~it-IT~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~ja-JP~0.0.1.0
+State : Installed
+
+Name  : Language.OCR~~~ko-KR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~nb-NO~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~nl-NL~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~pl-PL~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~pt-BR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~pt-PT~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~ro-RO~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~ru-RU~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~sk-SK~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~sl-SI~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~sr-CYRL-RS~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~sr-LATN-RS~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~sv-SE~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~tr-TR~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~zh-CN~0.0.1.0
+State : Installed
+
+Name  : Language.OCR~~~zh-HK~0.0.1.0
+State : NotPresent
+
+Name  : Language.OCR~~~zh-TW~0.0.1.0
+State : NotPresent
+
+
